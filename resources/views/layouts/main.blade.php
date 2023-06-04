@@ -15,7 +15,7 @@
     <body class="container-fluid">
         <div id="app">
             <header class="fixed w-full"  style="position: relative; margin-bottom:1em">
-              <!--  Place for a navbar   -->
+                @include('layouts.partials.navbar')
             </header>
 
             <div x-data="{ showMessage: true }" x-show="showMessage" x-init="setTimeout(() => showMessage = false, 2500)">
