@@ -3,6 +3,13 @@
                         <a href="/">
                             <img href="/" src="/pics/logo.png" alt="logo" style="width:6rem;">
                         </a>
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="nav-link {{ (Route::current()->getName() == 'list.create') ? 'active' : '' }}" href="{{ route('list.create') }}">
+                                    Create List
+                                </a>
+                            </li>
+                        </ul>
                         <div class="flex items-right lg:order-2">
                             @auth
                             <div style="display: flex; align-items: center;">

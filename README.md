@@ -1,5 +1,6 @@
-[![Maintainability](https://api.codeclimate.com/v1/badges/c1e4452d80ac4d0cadf3/maintainability)](https://codeclimate.com/github/Marre-86/test-ayanbek/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/c1e4452d80ac4d0cadf3/test_coverage)](https://codeclimate.com/github/Marre-86/test-ayanbek/test_coverage)
+[![author-check](https://github.com/Marre-86/test-reka/actions/workflows/author-check.yml/badge.svg)](https://github.com/Marre-86/test-reka/actions/workflows/author-check.yml)
+[![Maintainability](https://api.codeclimate.com/v1/badges/ee3fc19798337b4b4e66/maintainability)](https://codeclimate.com/github/Marre-86/test-reka/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/ee3fc19798337b4b4e66/test_coverage)](https://codeclimate.com/github/Marre-86/test-reka/test_coverage)
 
 ## About
 
