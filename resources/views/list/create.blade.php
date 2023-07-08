@@ -36,7 +36,7 @@
                 <button type="button" id="add-task-button" class="btn btn-outline-primary btn-sm">Add Task</button>
 
                 <div class="list-sbm">
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-primary">Create List</button>
                 </div>
             </form>
         </div>

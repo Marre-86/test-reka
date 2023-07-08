@@ -16,7 +16,7 @@ class TodoListTableSeeder extends Seeder
         TodoList::truncate();
 
         TodoList::create([
-            'name' => 'Work tasks till and of July',
+            'name' => 'Work tasks till the end of July',
             'created_by_id' => 1,
         ]);
 

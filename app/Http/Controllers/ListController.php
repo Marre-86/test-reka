@@ -101,7 +101,12 @@ class ListController extends Controller
      */
     public function show(TodoList $list)
     {
-        //
+        $listCreatorId = $list->created_by->id ?? 0;
+        if ((Auth::user() === null) or ((Auth::id() !== $listCreatorId) && (!Auth::user()->hasRole('Admin')))) {
+            abort(403);
+        }
+        $list = TodoList::findOrFail($list->id);
+        return view('list.show', ['list' => $list]);
     }
 
     /**
