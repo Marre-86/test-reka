@@ -4,6 +4,7 @@
                             <img href="/" src="/pics/logo.png" alt="logo" style="width:6rem;">
                         </a>
                         <ul class="navbar-nav me-auto">
+                            @auth
                             <li class="nav-item">
                                 <a class="nav-link {{ (Route::current()->getName() == 'list.create') ? 'active' : '' }}" href="{{ route('list.create') }}">
                                     Create List
@@ -14,6 +15,7 @@
                                     Your Lists
                                 </a>
                             </li>
+                            @endauth
                             @hasrole('Admin')
                                 <li class="nav-item">
                                     <a class="nav-link {{ (Route::current()->getName() == 'list.indexForAdmin') ? 'admin-menu-active' : '' }} admin-menu" href="{{ route('list.indexForAdmin') }}">View All Lists</a>
