@@ -6,6 +6,7 @@ use App\Models\TodoList;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class ListController extends Controller
 {
@@ -30,9 +31,19 @@ class ListController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
+        $images = $request->input('images');
+        $rules = [
             'name' => 'required',
-        ]);
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,bmp|max:2048',
+        ];
+      //  dd($request->all());
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()->first('images.*')], 400);
+        }
+
+        $validatedData = $validator->validated();
 
         $list = new TodoList();
         $list->name = $validatedData['name'];
@@ -41,18 +52,28 @@ class ListController extends Controller
         }
         $list->save();
 
-        $taskNames = [];
+        $taskContent = [];
 
         foreach ($request->all() as $fieldName => $fieldValue) {
             if ((strpos($fieldName, 'task') === 0) && ($fieldValue !== null)) {
-                $taskNames[] = $fieldValue;
+                $i = intval(substr($fieldName, 4, 9));
+                if (array_key_exists($i, $validatedData['images'])) {
+                    $image = $validatedData['images'][$i];
+                    $fileName = now()->format('Y.m.d-H.i.s') . '(' . $i . ').' . $image->extension();
+                    $image->storeAs('public/images', $fileName);
+                }
+
+                $taskContent[] = ['name' => $fieldValue,
+                                  'image' => $fileName ?? null];
+                $fileName = null;
             }
         }
 
         $i = 1;
-        foreach ($taskNames as $taskName) {
+        foreach ($taskContent as $taskContentItem) {
             $task = new Task();
-            $task->name = $taskName;
+            $task->name = $taskContentItem['name'];
+            $task->image = $taskContentItem['image'];
             $task->list_id = $list->id;
             $task->order_within_list = $i;
             $task->save();

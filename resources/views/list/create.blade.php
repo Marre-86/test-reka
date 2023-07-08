@@ -8,9 +8,10 @@
             <h3>Create list</h3>
         </div>
         <div class="card-body">
-            <form id="create-list-form">
+        <form id="create-list-form" enctype="multipart/form-data">
+        @csrf
                 <div class="form-group row">
-                    <label for="name" class="col-sm-3 col-form-label text-info">Name</label>
+                    <label for="name" class="col-sm-3 col-form-label text-primary">Name</label>
                     <div class="col-sm-8">
                         <input type="text" id="name" name="name" class="form-control-plaintext">
                         <span id="name-error" class="text-danger"></span>
@@ -20,11 +21,16 @@
 
                 <div id="task-container">
                     <div class="form-group row task">
-                        <label for="task1" class="col-sm-3 col-form-label">Task 1</label>
+                        <label for="task1" class="col-sm-3 col-form-label"><strong>Task 1</strong></label>
                         <div class="col-sm-8">
                             <input type="text" id="task1" name="task1" class="form-control-plaintext">
-                            <span id="name-error" class="text-danger"></span>
-                        </div>  
+                        </div>
+                        <label for="images[1]" class="col-sm-3 col-form-label">Image 1</label>
+                        <div class="col-sm-4">
+                            <input type="file" class="form-control" id="images[1]" name="images[1]" multiple accept="image/*">
+                            <span id="image-error1" class="text-danger"></span>
+                            <small id="imageHelp" class="form-text text-muted">Max size is 1024 kB.</small>
+                        </div>       
                     </div>
                 </div>
                 <button type="button" id="add-task-button" class="btn btn-outline-primary btn-sm">Add Task</button>
@@ -50,12 +56,17 @@
             var newTaskGroup = $('.form-group.row.task').first().clone();
 
             // Update the IDs and names of the cloned elements
-            newTaskGroup.find('label').attr('for', 'task' + taskCount).text('Task ' + taskCount);
-            newTaskGroup.find('input').attr({
+            newTaskGroup.find('label[for^="task"]').attr('for', 'task' + taskCount).html('<strong>Task ' + taskCount + '</strong>');
+            newTaskGroup.find('label[for^="image"]').attr('for', 'image' + taskCount).text('Image ' + taskCount);
+            newTaskGroup.find('input[name^="task"]').attr({
                 'id': 'task' + taskCount,
-                'name': 'task' + taskCount
+                'name': 'task' + taskCount,
             });
-            newTaskGroup.find('span.name-error').attr('id', 'name-error' + taskCount);
+            newTaskGroup.find('input[name^="image"]').attr({
+                'id': 'images[' + taskCount + ']',
+                'name': 'images[' + taskCount + ']',
+            });
+            newTaskGroup.find('#image-error1').attr('id', 'image-error' + taskCount);
 
             // Clear the input field of the cloned task group
             newTaskGroup.find('input').val('');
@@ -66,8 +77,7 @@
 
         $('#create-list-form').submit(function(event) {
             event.preventDefault();
-
-            var formData = $(this).serialize();
+            var formData = new FormData(this);
 
                 // Reset error message
             $('#name-error').text('');
@@ -89,9 +99,12 @@
                 type: 'POST',
                 data: formData,
                 dataType: 'json',
+                processData: false,
+                contentType: false,
                 success: function(response) {
                     // Handle success response
                     if (response.success) {
+                        console.log('success');
                         $('#name').val('');
                         $('#task-container .form-group.row.task:not(:first)').remove();
                         $('#task-container .form-group.row.task:first input').val('');
@@ -103,7 +116,17 @@
                     }
                 },
                 error: function(xhr) {
-                    alert('An error occurred while storing the list.');
+                    var errorResponse = JSON.parse(xhr.responseText);
+                    if (errorResponse.error) {
+                        var [, index] = errorResponse.error.match(/images\.(\d+)/);
+                        $('#images\\[' + index + '\\]').val('');
+                        $('#image-error'+ index).text(errorResponse.error);
+                         setTimeout(function() {
+                            $('#image-error'+ taskCount).text('');
+                        }, 3000);
+                    } else {
+                        alert('An error occurred while storing the model.');
+                    }
                 }
             });
         });

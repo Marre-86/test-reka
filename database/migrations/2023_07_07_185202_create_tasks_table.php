@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->integer('order_within_list');
+            $table->string('image')->nullable();
             $table->integer('list_id');
             $table->foreign('list_id')
                 ->references('id')

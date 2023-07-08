@@ -4,4 +4,4 @@
 
 ## About
 
-This project is a [test assignment](https://docs.google.com/document/u/0/d/1av0YcCLtlyKVVGsc9hP8lCZQ809UtarGlphPa2lPsNI/mobilebasic).
+This project is a test assignment.
