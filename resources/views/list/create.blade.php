@@ -29,7 +29,7 @@
                         <div class="col-sm-4">
                             <input type="file" class="form-control" id="images[1]" name="images[1]" multiple accept="image/*">
                             <span id="image-error1" class="text-danger"></span>
-                            <small id="imageHelp" class="form-text text-muted">Max size is 1024 kB.</small>
+                            <small id="imageHelp" class="form-text text-muted">Max size is 2048 kB.</small>
                         </div>       
                     </div>
                 </div>

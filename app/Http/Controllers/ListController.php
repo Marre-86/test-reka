@@ -7,6 +7,7 @@ use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class ListController extends Controller
 {
@@ -15,7 +16,16 @@ class ListController extends Controller
      */
     public function index()
     {
-        //
+        if (Auth::user() === null) {
+            abort(403);
+        }
+        if (Auth::user()->hasRole('Admin')) {
+            $lists = TodoList::orderBy('id', 'desc')->paginate(5);
+        } else {
+            $lists = TodoList::where('created_by_id', Auth::user()->id)->orderBy('id', 'desc')->paginate(5);
+        }
+
+        return view('list.index', compact('lists'));
     }
 
     /**
@@ -57,7 +67,7 @@ class ListController extends Controller
         foreach ($request->all() as $fieldName => $fieldValue) {
             if ((strpos($fieldName, 'task') === 0) && ($fieldValue !== null)) {
                 $i = intval(substr($fieldName, 4, 9));
-                if (array_key_exists($i, $validatedData['images'])) {
+                if ((array_key_exists('images', $validatedData)) && (array_key_exists($i, $validatedData['images']))) {
                     $image = $validatedData['images'][$i];
                     $fileName = now()->format('Y.m.d-H.i.s') . '(' . $i . ').' . $image->extension();
                     $image->storeAs('public/images', $fileName);
@@ -112,6 +122,22 @@ class ListController extends Controller
      */
     public function destroy(TodoList $list)
     {
-        //
+        if ((Auth::user() === null) or (Auth::id() !== $list->created_by->id)) {
+            abort(403);
+        }
+        $list = TodoList::findOrFail($list->id);
+        $list->tasks()->each(function ($task) {
+            if ($task->image !== null) {
+                $taskFilePath = 'public/images/' . $task->image;
+                if (Storage::exists($taskFilePath)) {
+                    Storage::delete($taskFilePath);
+                }
+            }
+            $task->delete();
+        });
+        $list->delete();
+
+        flash('List has been successfully deleted!')->success();
+        return redirect()->route('list.index');
     }
 }

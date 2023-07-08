@@ -9,6 +9,11 @@
                                     Create List
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{ (Route::current()->getName() == 'list.index') ? 'active' : '' }}" href="{{ route('list.index') }}">
+                                    Your Lists
+                                </a>
+                            </li>
                         </ul>
                         <div class="flex items-right lg:order-2">
                             @auth

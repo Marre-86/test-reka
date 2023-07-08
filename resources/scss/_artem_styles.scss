@@ -17,6 +17,15 @@
     width:100%;
   }
 }
+.w-60 {
+  width:60%;
+  margin-bottom:2rem;
+}
+@media (max-width: 1000px) {
+  .w-60 {
+    width:100%;
+  }
+}
 .form-group {
   margin-top:10px
 }
