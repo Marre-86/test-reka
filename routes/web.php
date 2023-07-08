@@ -35,3 +35,6 @@ Route::post('/logout', [Logoutcontroller::class, 'destroy'])
     ->middleware('auth')->name('logout');
 
 Route::resource('list', ListController::class);
+
+Route::get('/admin-list', [Listcontroller::class, 'indexForAdmin'])
+    ->middleware('can:view-lists-of-others')->name('list.indexForAdmin');

@@ -17,21 +17,19 @@ class RoleAndPermissionSeeder extends Seeder
         Permission::truncate();
         Role::truncate();
 
-        Permission::create(['name' => 'manage-posts']);
-        Permission::create(['name' => 'manage-comments']);
-        Permission::create(['name' => 'write-comments']);
+        Permission::create(['name' => 'manage-own-lists']);
+        Permission::create(['name' => 'view-lists-of-others']);
 
         $adminRole = Role::create(['name' => 'Admin']);
         $userRole = Role::create(['name' => 'User']);
 
         $adminRole->givePermissionTo([
-            'manage-posts',
-            'manage-comments',
-            'write-comments'
+            'manage-own-lists',
+            'view-lists-of-others',
         ]);
 
         $userRole->givePermissionTo([
-            'write-comments'
+            'manage-own-lists'
         ]);
     }
 }

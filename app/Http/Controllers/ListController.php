@@ -19,13 +19,16 @@ class ListController extends Controller
         if (Auth::user() === null) {
             abort(403);
         }
-        if (Auth::user()->hasRole('Admin')) {
-            $lists = TodoList::orderBy('id', 'desc')->paginate(5);
-        } else {
-            $lists = TodoList::where('created_by_id', Auth::user()->id)->orderBy('id', 'desc')->paginate(5);
-        }
+        $lists = TodoList::where('created_by_id', Auth::user()->id)->orderBy('id', 'desc')->paginate(5);
 
         return view('list.index', compact('lists'));
+    }
+
+    public function indexForAdmin()
+    {
+        $lists = TodoList::orderBy('id', 'desc')->paginate(5);
+
+        return view('list.indexForAdmin', compact('lists'));
     }
 
     /**

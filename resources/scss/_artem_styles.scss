@@ -43,3 +43,15 @@
 .img-lbl {
   font-size: small;
 }
+
+.admin-menu {
+  color:lightseagreen;
+}
+
+.admin-menu:hover{
+  color:$primary;
+}
+
+.admin-menu-active, .admin-menu-active:hover{
+  color:$primary;
+}
