@@ -12,16 +12,13 @@ use Illuminate\Support\Facades\Storage;
 class ListController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Show the form for creating a new resource and render a table with resources
      */
-    public function index()
+    public function createAndIndex()
     {
-        if (Auth::user() === null) {
-            abort(403);
-        }
         $lists = TodoList::where('created_by_id', Auth::user()->id)->orderBy('id', 'desc')->paginate(5);
 
-        return view('list.index', compact('lists'));
+        return view('list.create', compact('lists'));
     }
 
     public function indexForAdmin()
@@ -29,14 +26,6 @@ class ListController extends Controller
         $lists = TodoList::orderBy('id', 'desc')->paginate(5);
 
         return view('list.indexForAdmin', compact('lists'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('list.create');
     }
 
     /**
@@ -49,7 +38,7 @@ class ListController extends Controller
             'name' => 'required',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,bmp|max:2048',
         ];
-      //  dd($request->all());
+
         $validator = Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
@@ -93,7 +82,22 @@ class ListController extends Controller
             $i += 1;
         }
 
-        return response()->json(['success' => true]);
+        $newList = TodoList::findOrFail($list->id);
+
+        // Get the count of associated tasks
+        $taskCount = $newList->tasks()->count();
+
+        // Prepare the data for the JSON response
+        $responseData = [
+            'success' => true,
+            'id' => $newList->id,
+            'name' => $newList->name,
+            'created_at' => $newList->created_at,
+            'task_count' => $taskCount,
+        ];
+
+        // Return the JSON response
+        return response()->json($responseData);
     }
 
     /**
@@ -146,6 +150,6 @@ class ListController extends Controller
         $list->delete();
 
         flash('List has been successfully deleted!')->success();
-        return redirect()->route('list.index');
+        return redirect()->route('list.createAndIndex');
     }
 }

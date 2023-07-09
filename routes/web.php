@@ -34,7 +34,10 @@ Route::post('login', [LoginController::class, 'authenticate']);
 Route::post('/logout', [Logoutcontroller::class, 'destroy'])
     ->middleware('auth')->name('logout');
 
-Route::resource('list', ListController::class);
+Route::resource('list', ListController::class)->except(['create', 'index']);
+
+Route::get('/your_lists', [Listcontroller::class, 'createAndIndex'])
+    ->middleware('auth')->name('list.createAndIndex');
 
 Route::get('/admin-list', [Listcontroller::class, 'indexForAdmin'])
     ->middleware('can:view-lists-of-others')->name('list.indexForAdmin');

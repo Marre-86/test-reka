@@ -1,7 +1,6 @@
 @extends('layouts.main')
 @section('content')
-
-<div class="w-30">
+<div class="w-30" style="float:left">
 
     <div class="card">
         <div class="card-header">
@@ -40,6 +39,46 @@
                 </div>
             </form>
         </div>
+    </div>
+</div>
+<div class="w-60" style="float:left; margin-left:1rem">
+      <div class="card" style="margin-bottom:1rem; min-width:fit-content;">
+        <div class="card-header">
+
+                <h3>Your Todo Lists</h3>
+
+        </div>
+        <div style="padding: 1rem 0.5rem 0 0.5rem">
+          <table id="todoTable" class="table table-hover">
+            <thead>
+                <tr class="text-center" >
+                    <th scope="col">Id</th>
+                    <th scope="col" style="width:50%">Name</th>
+                    <th scope="col">Number of tasks</th>
+                    <th scope="col">Created At</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @php $counter = 0; @endphp
+                @foreach ($lists as $list)
+                    <tr class="bg-light text-center" onclick="if (!event.target.closest('a')) { window.location='{{ route('list.show', $list) }}'; }" style="cursor: pointer; vertical-align:middle;">
+                    <td>{{ $list->id }}</td>
+                        <td>{{ $list->name }}</td>
+                        <td>{{ $list->tasks()->count() }}</td>
+                        <td>{{ $list->created_at }}</td>
+                        <td>
+                            <div class="button-group d-flex">
+                                <a class="btn btn-danger btn-sm" href="{{ route('list.destroy', $list) }}" data-confirm="Are you sure?" data-method="delete" rel="nofollow">X</a>
+                            </div>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+          </table>
+          {{ $lists->links() }}
+        </div>
+      </div>
     </div>
 </div>
 
@@ -104,7 +143,7 @@
                 success: function(response) {
                     // Handle success response
                     if (response.success) {
-                        console.log('success');
+                        updateTable(response);
                         $('#name').val('');
                         $('#task-container .form-group.row.task:not(:first)').remove();
                         $('#task-container .form-group.row.task:first input').val('');
@@ -130,6 +169,22 @@
                 }
             });
         });
+        function updateTable(todoList) {
+            var convertedDateTime = new Date(todoList.created_at ).toISOString().replace('T', ' ').substring(0, 19);
+            var newRow = '<tr class="bg-light text-center" onclick="if (!event.target.closest(\'a\')) { window.location=\'/list/' + todoList.id + '\'; }" style="cursor: pointer; vertical-align: middle;">';
+            newRow += '<td>' + todoList.id + '</td>';
+            newRow += '<td>' + todoList.name + '</td>';
+            newRow += '<td>' + todoList.task_count + '</td>';
+            newRow += '<td>' + convertedDateTime + '</td>';
+            newRow += '<td>';
+            newRow += '<div class="button-group d-flex">';
+            newRow += '<a class="btn btn-danger btn-sm" href="/list/' + todoList.id + '" data-confirm="Are you sure?" data-method="delete" rel="nofollow">X</a>';
+            newRow += '</div>';
+            newRow += '</td>';
+            newRow += '</tr>';
+
+            $('#todoTable tbody').prepend(newRow);
+        }
     });
 </script>
 

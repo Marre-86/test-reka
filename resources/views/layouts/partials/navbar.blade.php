@@ -6,12 +6,7 @@
                         <ul class="navbar-nav me-auto">
                             @auth
                             <li class="nav-item">
-                                <a class="nav-link {{ (Route::current()->getName() == 'list.create') ? 'active' : '' }}" href="{{ route('list.create') }}">
-                                    Create List
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link {{ (Route::current()->getName() == 'list.index') ? 'active' : '' }}" href="{{ route('list.index') }}">
+                                <a class="nav-link {{ (Route::current()->getName() == 'list.createAndIndex') ? 'active' : '' }}" href="{{ route('list.createAndIndex') }}">
                                     Your Lists
                                 </a>
                             </li>
