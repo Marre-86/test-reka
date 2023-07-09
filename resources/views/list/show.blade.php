@@ -30,11 +30,18 @@
                         </a>
                       @endif
                     </td>
-                    <td>{{ $task->name }}</td>
+                    <td>{{ $task->name }}
+                      <div>
+                        @foreach ($task->tags as $tag)
+                          <span class="badge bg-primary">{{ $tag->name }}</span>
+                        @endforeach
+                      </div>
+                    </td>
                 </tr>
               @endforeach
             </tbody>
         </table>
+
         </div></div>
     </div>
 @endsection

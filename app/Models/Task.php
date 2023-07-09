@@ -15,4 +15,9 @@ class Task extends Model
     {
         return $this->belongsTo('App\Models\TodoList');
     }
+
+    public function tags()
+    {
+        return $this->belongsToMany('App\Models\Tag');
+    }
 }

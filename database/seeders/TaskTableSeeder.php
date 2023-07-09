@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Task;
+use App\Models\Tag;
 
 class TaskTableSeeder extends Seeder
 {
@@ -157,5 +158,17 @@ class TaskTableSeeder extends Seeder
             'image' => 'call-mom.jpg'
         ]);
 
+        $this->attachTags();
+    }
+
+    public function attachTags(): void
+    {
+        $tasks = Task::all();
+
+        foreach ($tasks as $task) {
+            $tags = Tag::inRandomOrder()->take(rand(0, 4))->get();
+   
+            $task->tags()->attach($tags);
+        }
     }
 }

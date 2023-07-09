@@ -145,8 +145,18 @@ class ListController extends Controller
                     Storage::delete($taskFilePath);
                 }
             }
+            // Deleting tags which are not attached to any other task
+            $detachedTags = $task->tags;
+            $task->tags()->detach();
+            foreach ($detachedTags as $detachedTag) {
+                if ($detachedTag->tasks()->count() === 0) {
+                    $detachedTag->delete();
+                }
+            }
+
             $task->delete();
         });
+
         $list->delete();
 
         flash('List has been successfully deleted!')->success();
