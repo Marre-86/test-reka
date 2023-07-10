@@ -15,12 +15,12 @@ class SearchTasks extends Component
     public function render()
     {
         $tasks = Task::where('list_id', $this->listId)
-             ->whereRaw("UPPER(name) LIKE '%" . strtoupper($this->searchTaskName) . "%'")
+             ->whereRaw("LOWER(name) LIKE '%' || LOWER('" . $this->searchTaskName . "') || '%'")
              ->whereHas('tags', function ($query) {
-                $query->whereRaw("UPPER(name) LIKE '%" . strtoupper($this->searchTag1) . "%'");
+                $query->whereRaw("LOWER(name) LIKE '%' || LOWER('" . $this->searchTag1 . "') || '%'");
              })
              ->whereHas('tags', function ($query) {
-                $query->whereRaw("UPPER(name) LIKE '%" . strtoupper($this->searchTag2) . "%'");
+                $query->whereRaw("LOWER(name) LIKE '%' || LOWER('" . $this->searchTag2 . "') || '%'");
              })
              ->get();
 
