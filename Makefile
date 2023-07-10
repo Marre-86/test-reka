@@ -1,9 +1,11 @@
 go:
 	php artisan serve
-railway: migrate seed storage-link start
+railway: livewire migrate seed storage-link start
 PORT ?= 6985
 start:
 	PHP_CLI_SERVER_WORKERS=5 php -S 0.0.0.0:$(PORT)  -t public
+livewire:
+	php artisan vendor:publish --force --tag=livewire:assets
 migrate:
 	php artisan migrate:fresh --force
 	php artisan migrate --force
