@@ -24,6 +24,11 @@
                         <div class="col-sm-8">
                             <input type="text" id="task1" name="task1" class="form-control-plaintext">
                         </div>
+                        <label for="tags[1]" class="col-sm-3 col-form-label">Tags 1</label>
+                        <div class="col-sm-8">
+                            <input type="text" id="tags[1]" name="tags[1]" class="form-control-plaintext">
+                            <small id="tagsHelp" class="form-text text-muted">Specify tags, divided by commas.</small>
+                        </div>
                         <label for="images[1]" class="col-sm-3 col-form-label">Image 1</label>
                         <div class="col-sm-4">
                             <input type="file" class="form-control" id="images[1]" name="images[1]" multiple accept="image/*">
@@ -96,12 +101,17 @@
 
             // Update the IDs and names of the cloned elements
             newTaskGroup.find('label[for^="task"]').attr('for', 'task' + taskCount).html('<strong>Task ' + taskCount + '</strong>');
-            newTaskGroup.find('label[for^="image"]').attr('for', 'image' + taskCount).text('Image ' + taskCount);
+            newTaskGroup.find('label[for^="tags"]').attr('for', 'tags[' + taskCount + ']').text('Tags ' + taskCount);
+            newTaskGroup.find('label[for^="images"]').attr('for', 'images[' + taskCount + ']').text('Image ' + taskCount);
             newTaskGroup.find('input[name^="task"]').attr({
                 'id': 'task' + taskCount,
                 'name': 'task' + taskCount,
             });
-            newTaskGroup.find('input[name^="image"]').attr({
+            newTaskGroup.find('input[name^="tags"]').attr({
+                'id': 'tags[' + taskCount + ']',
+                'name': 'tags[' + taskCount + ']',
+            });
+            newTaskGroup.find('input[name^="images"]').attr({
                 'id': 'images[' + taskCount + ']',
                 'name': 'images[' + taskCount + ']',
             });

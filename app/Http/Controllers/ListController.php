@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TodoList;
 use App\Models\Task;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -37,6 +38,7 @@ class ListController extends Controller
         $rules = [
             'name' => 'required',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,bmp|max:2048',
+            'tags.*' => 'nullable',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -56,6 +58,7 @@ class ListController extends Controller
 
         $taskContent = [];
 
+        $n = 1;
         foreach ($request->all() as $fieldName => $fieldValue) {
             if ((strpos($fieldName, 'task') === 0) && ($fieldValue !== null)) {
                 $i = intval(substr($fieldName, 4, 9));
@@ -63,6 +66,18 @@ class ListController extends Controller
                     $image = $validatedData['images'][$i];
                     $fileName = now()->format('Y.m.d-H.i.s') . '(' . $i . ').' . $image->extension();
                     $image->storeAs('public/images', $fileName);
+                }
+
+                if ((array_key_exists('tags', $validatedData)) && (array_key_exists($i, $validatedData['tags']))) {
+                    $tagsString = $validatedData['tags'][$i];
+                    $tagsArray = array_map('trim', explode(',', $tagsString));
+                    $uniqueTags = array_unique($tagsArray);
+                    $tagIds[$n] = [];
+                    foreach ($uniqueTags as $tagName) {
+                        $tag = Tag::firstOrCreate(['name' => $tagName]);
+                        $tagIds[$n][] = $tag->id;
+                    }
+                    $n += 1;
                 }
 
                 $taskContent[] = ['name' => $fieldValue,
@@ -79,6 +94,7 @@ class ListController extends Controller
             $task->list_id = $list->id;
             $task->order_within_list = $i;
             $task->save();
+            $task->tags()->attach($tagIds[$i]);
             $i += 1;
         }
 
