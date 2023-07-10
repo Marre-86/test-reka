@@ -3,7 +3,7 @@
 
 <div class="w-60">
 
-    <p class="intro">This app has been completed by <a href="https://www.linkedin.com/in/artem-pokhiliuk/">Artem Pokhiliuk</a> as a test assignment. It has been made in Laravel framework.</p>
+    <p class="intro">This app has been completed by <a href="https://www.linkedin.com/in/artem-pokhiliuk/">Artem Pokhiliuk</a> as a test assignment. It has been made in Laravel framework with using jQuery. The source code <a href="https://github.com/Marre-86/test-reka">is here</a> .</p>
     <p class="intro">There are three users added to the app by default:</p>
     <table class="table table-hover" style="max-width:26rem; margin:auto">
         <thead>
@@ -36,7 +36,7 @@
     <p class="intro" style="margin-top:1rem">'Users' have permissions to manage their own todo lists. Admin has permissions to view todo lists of all users, and manage his own lists like a regular user.</p>
     <p class="intro">You are free to register new users and create and manage your own todo lists.</p>
 
-    <p class="intro">The task according to which the project was completed (first 3 items out of 5 so far):</p>
+    <p class="intro">The task according to which the project was completed:</p>
     <div class="acc-code">
     <p>Тестовое задание, результат необходимо выложить в git репозиторий и написать инструкцию по деплою.
 Для реализации использовать на бекенде PHP, фреймворк - Laravel, на фронте JS / jQuery. Для элементов интерфейса - Bootstrap</p>

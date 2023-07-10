@@ -134,7 +134,15 @@ class ListController extends Controller
      */
     public function edit(TodoList $list)
     {
-        //
+        $list = TodoList::findOrFail($list->id);
+        $tagNamesArray = [];
+
+        foreach ($list->tasks as $task) {
+            $tagNames = $task->tags->pluck('name')->implode(', ');
+            $tagNamesArray[$task->order_within_list] = $tagNames;
+        }
+
+        return view('list.edit', ['list' => $list, 'tags' => $tagNamesArray]);
     }
 
     /**
@@ -142,7 +150,70 @@ class ListController extends Controller
      */
     public function update(Request $request, TodoList $list)
     {
-        //
+
+        $images = $request->input('images');
+        $rules = [
+            'name' => 'required',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,bmp|max:2048',
+            'tags.*' => 'nullable',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return redirect(route('list.edit', $list))
+                    ->withErrors($validator)
+                    ->withInput();
+        }
+
+        $validatedData = $validator->validated();
+
+        $list->name = $validatedData['name'];
+        $list->save();
+
+        if ($request->input('tasks') !== null) {
+            foreach ($request->input('tasks') as $taskId => $taskName) {
+                $task = Task::find($taskId);
+                $task->name = $taskName;
+
+                // Deleting tags which are not attached to any other task
+                $detachedTags = $task->tags;
+                $task->tags()->detach();
+                foreach ($detachedTags as $detachedTag) {
+                    if ($detachedTag->tasks()->count() === 0) {
+                        $detachedTag->delete();
+                    }
+                }
+
+                $tagsString = $validatedData['tags'][$taskId];
+                $tagsArray = array_filter(array_map('trim', explode(',', $tagsString)));
+                $uniqueTags = array_unique($tagsArray);
+                $tagIds = [];
+                foreach ($uniqueTags as $tagName) {
+                    $tag = Tag::firstOrCreate(['name' => $tagName]);
+                    $tagIds[] = $tag->id;
+                }
+                if (!empty($tagIds)) {
+                    $task->tags()->attach($tagIds);
+                }
+
+                if (array_key_exists('images', $validatedData) && array_key_exists($taskId, $validatedData['images'])) {
+                    $imageFilePath = 'public/images/' . $task->image;
+                    if (Storage::exists($imageFilePath)) {
+                        Storage::delete($imageFilePath);
+                    }
+                    $image = $validatedData['images'][$taskId];
+                    $fileName = now()->format('Y.m.d-H.i.s') . '(' . $taskId . ').' . $image->extension();
+                    $image->storeAs('public/images', $fileName);
+                    $task->image = $fileName;
+                }
+
+                $task->save();
+            }
+        }
+
+        flash('List has been successfully updated!')->success();
+        return redirect()->route('list.createAndIndex');
     }
 
     /**

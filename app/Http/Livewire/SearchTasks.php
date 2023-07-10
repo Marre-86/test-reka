@@ -14,15 +14,21 @@ class SearchTasks extends Component
 
     public function render()
     {
+        // we use 'when' here for cases when task has no tags and nulls are in tag searches
         $tasks = Task::where('list_id', $this->listId)
-             ->whereRaw("LOWER(name) LIKE '%' || LOWER('" . $this->searchTaskName . "') || '%'")
-             ->whereHas('tags', function ($query) {
-                $query->whereRaw("LOWER(name) LIKE '%' || LOWER('" . $this->searchTag1 . "') || '%'");
-             })
-             ->whereHas('tags', function ($query) {
-                $query->whereRaw("LOWER(name) LIKE '%' || LOWER('" . $this->searchTag2 . "') || '%'");
-             })
-             ->get();
+            ->whereRaw("LOWER(name) LIKE '%' || LOWER('" . $this->searchTaskName . "') || '%'")
+            ->when($this->searchTag1, function ($query) {
+                return $query->whereHas('tags', function ($subQuery) {
+                    $subQuery->whereRaw("LOWER(name) LIKE '%' || LOWER('" . $this->searchTag1 . "') || '%'");
+                });
+            })
+            ->when($this->searchTag2, function ($query) {
+                return $query->whereHas('tags', function ($subQuery) {
+                    $subQuery->whereRaw("LOWER(name) LIKE '%' || LOWER('" . $this->searchTag2 . "') || '%'");
+                });
+            })
+            ->orderBy('order_within_list')
+            ->get();
 
         return view('livewire.search-tasks', [
             'tasks' => $tasks,

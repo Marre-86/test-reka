@@ -24,13 +24,13 @@
                         <div class="col-sm-8">
                             <input type="text" id="task1" name="task1" class="form-control-plaintext">
                         </div>
-                        <label for="tags[1]" class="col-sm-3 col-form-label">Tags 1</label>
+                        <label for="tags[1]" class="col-sm-3 col-form-label">Tags</label>
                         <div class="col-sm-8">
                             <input type="text" id="tags[1]" name="tags[1]" class="form-control-plaintext">
                             <small id="tagsHelp" class="form-text text-muted">Specify tags, divided by commas.</small>
                         </div>
-                        <label for="images[1]" class="col-sm-3 col-form-label">Image 1</label>
-                        <div class="col-sm-4">
+                        <label for="images[1]" class="col-sm-3 col-form-label">Image</label>
+                        <div class="col-sm-8">
                             <input type="file" class="form-control" id="images[1]" name="images[1]" multiple accept="image/*">
                             <span id="image-error1" class="text-danger"></span>
                             <small id="imageHelp" class="form-text text-muted">Max size is 2048 kB.</small>
@@ -62,6 +62,7 @@
                     <th scope="col">Number of tasks</th>
                     <th scope="col">Created At</th>
                     <th scope="col"></th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
@@ -73,8 +74,13 @@
                         <td>{{ $list->tasks()->count() }}</td>
                         <td>{{ $list->created_at }}</td>
                         <td>
+                          <div class="button-group d-flex">
+                            <a class="btn btn-outline-success btn-sm" href="{{ route('list.edit', $list) }}">edit</a>
+                          </div>
+                        </td>
+                        <td>
                             <div class="button-group d-flex">
-                                <a class="btn btn-danger btn-sm" href="{{ route('list.destroy', $list) }}" data-confirm="Are you sure?" data-method="delete" rel="nofollow">X</a>
+                                <a class="btn btn-danger btn-sm" href="{{ route('list.destroy', $list) }}" data-confirm="Are you sure that you want to delete this list?" data-method="delete" rel="nofollow">X</a>
                             </div>
                         </td>
                     </tr>
@@ -101,8 +107,6 @@
 
             // Update the IDs and names of the cloned elements
             newTaskGroup.find('label[for^="task"]').attr('for', 'task' + taskCount).html('<strong>Task ' + taskCount + '</strong>');
-            newTaskGroup.find('label[for^="tags"]').attr('for', 'tags[' + taskCount + ']').text('Tags ' + taskCount);
-            newTaskGroup.find('label[for^="images"]').attr('for', 'images[' + taskCount + ']').text('Image ' + taskCount);
             newTaskGroup.find('input[name^="task"]').attr({
                 'id': 'task' + taskCount,
                 'name': 'task' + taskCount,
@@ -186,11 +190,12 @@
             newRow += '<td>' + todoList.name + '</td>';
             newRow += '<td>' + todoList.task_count + '</td>';
             newRow += '<td>' + convertedDateTime + '</td>';
-            newRow += '<td>';
-            newRow += '<div class="button-group d-flex">';
-            newRow += '<a class="btn btn-danger btn-sm" href="/list/' + todoList.id + '" data-confirm="Are you sure?" data-method="delete" rel="nofollow">X</a>';
-            newRow += '</div>';
-            newRow += '</td>';
+            newRow += '<td><div class="button-group d-flex">';
+            newRow += '<a class="btn btn-outline-success btn-sm" href="/list/' + todoList.id + '/edit">edit</a>';
+            newRow += '</div></td>';
+            newRow += '<td><div class="button-group d-flex">';
+            newRow += '<a class="btn btn-danger btn-sm" href="/list/' + todoList.id + '" data-confirm="Are you sure that you want to delete this list?" data-method="delete" rel="nofollow">X</a>';
+            newRow += '</div></td>';
             newRow += '</tr>';
 
             $('#todoTable tbody').prepend(newRow);
