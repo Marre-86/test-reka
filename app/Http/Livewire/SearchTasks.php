@@ -30,8 +30,11 @@ class SearchTasks extends Component
             ->orderBy('order_within_list')
             ->get();
 
+        $tags = Task::where('list_id', $this->listId)->get()->pluck('tags')->flatten()->unique('id')->values();
+
         return view('livewire.search-tasks', [
             'tasks' => $tasks,
+            'tags' => $tags
         ]);
     }
 }

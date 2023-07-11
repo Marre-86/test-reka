@@ -3,12 +3,22 @@
         <input wire:model="searchTaskName" class="form-control" type="search" placeholder="Search tasks...">
         <small class="form-text text-muted">Search by task name</small>
     </div>
-    <div class="search-task">
-        <input wire:model="searchTag1" class="form-control" type="search" placeholder="Search tags...">
+    <div class="search-task">        
+        <select wire:model="searchTag1" class="form-select" required>
+          <option value="">Search tags...</option>
+          @foreach ($tags as $tag)
+            <option value="{{ $tag->name }}">{{ $tag->name }}</option>
+          @endforeach
+        </select>
         <small class="form-text text-muted">Search by tag 1</small>
     </div>
     <div class="search-task">
-        <input wire:model="searchTag2" class="form-control" type="search" placeholder="Search tags...">
+        <select wire:model="searchTag2" class="form-select" required>
+          <option value="">Search tags...</option>
+          @foreach ($tags as $tag)
+            <option value="{{ $tag->name }}">{{ $tag->name }}</option>
+          @endforeach
+        </select>
         <small class="form-text text-muted">Search by tag 2</small>
     </div>
 

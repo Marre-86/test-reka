@@ -1,6 +1,7 @@
 @extends('layouts.main')
 @section('content')
-    <div style="width: 40%;">
+<div class="ali-cen-out">
+    <div class="ali-cen-in">
         <div class="card" style="margin-bottom:1rem; min-width:28rem;">
             <div class="card-header">
                 <h3>Edit List</h3>
@@ -63,5 +64,6 @@
         {{ Form::close() }}
         
     </div>
+</div>
 @endsection
 

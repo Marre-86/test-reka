@@ -85,3 +85,22 @@
   margin:0 20px 0 20px;
   float:left;
 }
+
+.ali-cen-out {
+  text-align: center;
+}
+
+.ali-cen-in {
+  display: inline-block;
+  text-align: left;
+}
+
+select {
+  color: black;
+}
+
+select:invalid {
+  color: #a9a9a9;
+}
+
+select:invalid option:not(:disabled) { color: black } 
