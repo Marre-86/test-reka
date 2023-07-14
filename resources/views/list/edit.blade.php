@@ -55,7 +55,32 @@
                 {{ Form::file('images[' . $task->id . ']', ['class' => 'form-control', 'style' => 'width:60%', 'accept' => 'image/*'])}}
                 <small id="imageHelp" class="form-text text-muted">Max size is 2048 kB.</small>
             </div>
+          </div>
 
+          <div class="ins-task-btn">
+              <button type="button" class="btn btn-outline-dark">INSERT TASK</button>
+          </div>
+
+          <div class="new-card-container" style="display: none;">
+            <div class="card" style="margin-top:1rem; padding-left:1rem; min-width:28rem;">
+                <div class="form-group row" style="margin-bottom:10px">
+                    {{ Form::label('newTasks[0]', 'New Task', ['class' => 'col-sm-3 col-form-label', 'style' => 'font-weight: bold']) }}
+                    <div class="col-sm-9">
+                        {{ Form::text('newTasks[0]', null, ['class' => 'form-control-plaintext', 'style' => 'width:80%', 'required' => 'required', 'disabled' => 'disabled'])}}
+                    </div>
+                </div>
+                <div class="form-group row" style="margin-bottom:10px">
+                    {{ Form::label('newTags[0]', 'Tags', ['class' => 'col-sm-3 col-form-label']) }}
+                    <div class="col-sm-9">
+                        {{ Form::text('newTags[0]', null, ['class' => 'form-control-plaintext', 'style' => 'width:80%', 'disabled' => 'disabled'])}}
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:10px;">
+                    <p style="margin-bottom:0.2rem; float:left;">Image</p>
+                    {{ Form::file('newImages[0]', ['class' => 'form-control', 'style' => 'width:60%', 'accept' => 'image/*', 'disabled' => 'disabled'])}}
+                    <small id="imageHelp" class="form-text text-muted">Max size is 2048 kB.</small>
+                </div>
+            </div>
           </div>
         @endforeach        
         <div class="list-sbm" style="margin-bottom:1rem">
@@ -65,5 +90,44 @@
         
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('.btn-outline-dark').on('click', function() {
+      var newContainer = $(this).closest('.ins-task-btn').next('.new-card-container');
+
+      newContainer.show();
+      $(this).parent().hide();
+
+      var goesAfter_String = $(this).closest('.ins-task-btn').prev('.card').find('.col-form-label:first').text();
+      var goesAfter = goesAfter_String.replace('Task ', '');
+
+      // Update the label and input field with the new task index
+      newContainer.find('label').eq(0)
+        .attr('id', 'newTasks[' + goesAfter + ']')
+        .attr('for', 'newTasks[' + goesAfter + ']');
+      newContainer.find('input').eq(0)
+        .attr('name', 'newTasks[' + goesAfter + ']')
+        .attr('id', 'newTasks[' + goesAfter + ']')
+        .removeAttr('disabled');
+    
+      newContainer.find('label').eq(1)
+        .attr('id', 'newTags[' + goesAfter + ']')
+        .attr('for', 'newTags[' + goesAfter + ']');
+      newContainer.find('input').eq(1)
+        .attr('name', 'newTags[' + goesAfter + ']')
+        .attr('id', 'newTags[' + goesAfter + ']')
+        .removeAttr('disabled');
+
+      newContainer.find('input').eq(2)
+        .attr('name', 'newImages[' + goesAfter + ']')
+        .attr('id', 'newImages[' + goesAfter + ']')
+        .removeAttr('disabled');
+
+    });
+  });
+</script>
+
 @endsection
 

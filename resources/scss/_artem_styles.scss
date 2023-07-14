@@ -26,6 +26,15 @@
     width:100%;
   }
 }
+.todo-index {
+  float:left;
+  margin-left:1rem;
+}
+@media (max-width: 1100px) {
+  .todo-index {
+    margin-left:0;
+  }
+}
 .form-group {
   margin-top:10px
 }
@@ -103,4 +112,9 @@ select:invalid {
   color: #a9a9a9;
 }
 
-select:invalid option:not(:disabled) { color: black } 
+select:invalid option:not(:disabled) { color: black }
+
+.ins-task-btn {
+  text-align: center;
+  margin-top:1rem;
+}

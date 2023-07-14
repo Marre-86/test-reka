@@ -46,7 +46,7 @@
         </div>
     </div>
 </div>
-<div class="w-60" style="float:left; margin-left:1rem">
+<div class="w-60 todo-index">
       <div class="card" style="margin-bottom:1rem; min-width:fit-content;">
         <div class="card-header">
 

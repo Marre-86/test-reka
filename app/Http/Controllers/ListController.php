@@ -150,12 +150,14 @@ class ListController extends Controller
      */
     public function update(Request $request, TodoList $list)
     {
-
+     //   dd($request->all());
         $images = $request->input('images');
         $rules = [
             'name' => 'required',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,bmp|max:2048',
             'tags.*' => 'nullable',
+            'newImages.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,bmp|max:2048',
+            'newTags.*' => 'nullable',
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -167,36 +169,60 @@ class ListController extends Controller
         }
 
         $validatedData = $validator->validated();
-
+     //   dd($validatedData);
         $list->name = $validatedData['name'];
         $list->save();
+
+
+
+        if ($request->input('newTasks') !== null) {
+            foreach ($request->input('newTasks') as $newTaskGoesAfter => $newTaskName) {
+                $task = new Task();
+                $task->name = $newTaskName;
+                if ((array_key_exists('newImages', $validatedData)) && (array_key_exists($newTaskGoesAfter, $validatedData['newImages']))) {   // phpcs:ignore
+                    $image = $validatedData['newImages'][$newTaskGoesAfter];
+                    $fileName = now()->format('Y.m.d-H.i.s') . '(' . $newTaskGoesAfter . ').' . $image->extension();
+                    $image->storeAs('public/images', $fileName);
+                    $task->image = $fileName ?? null;
+                    $fileName = null;
+                }
+                $task->list_id = $list->id;
+                $task->order_within_list = 999;
+                $task->save();
+                if ((array_key_exists('newTags', $validatedData)) && (array_key_exists($newTaskGoesAfter, $validatedData['newTags']))) {   // phpcs:ignore
+                    $tagsString = $validatedData['newTags'][$newTaskGoesAfter];
+                    $tagsArray = array_map('trim', explode(',', $tagsString));
+                    $uniqueTags = array_unique($tagsArray);
+                    foreach ($uniqueTags as $tagName) {
+                        $tag = Tag::firstOrCreate(['name' => $tagName]);
+                        $task->tags()->attach($tag->id);
+                    }
+                }
+            }
+        }
+
+
 
         if ($request->input('tasks') !== null) {
             foreach ($request->input('tasks') as $taskId => $taskName) {
                 $task = Task::find($taskId);
                 $task->name = $taskName;
 
-                // Deleting tags which are not attached to any other task
-                $detachedTags = $task->tags;
-                $task->tags()->detach();
-                foreach ($detachedTags as $detachedTag) {
-                    if ($detachedTag->tasks()->count() === 0) {
-                        $detachedTag->delete();
-                    }
-                }
-
                 $tagsString = $validatedData['tags'][$taskId];
                 $tagsArray = array_filter(array_map('trim', explode(',', $tagsString)));
                 $uniqueTags = array_unique($tagsArray);
-                $tagIds = [];
+                // Deleting tags which are not attached to any other task and not found in the current input
+                $detachedTags = $task->tags;
+                $task->tags()->detach();
+                foreach ($detachedTags as $detachedTag) {
+                    if (($detachedTag->tasks()->count() === 0) && (!in_array($detachedTag->name, $uniqueTags))) {
+                        $detachedTag->delete();
+                    }
+                }
                 foreach ($uniqueTags as $tagName) {
                     $tag = Tag::firstOrCreate(['name' => $tagName]);
-                    $tagIds[] = $tag->id;
+                    $task->tags()->attach($tag->id);
                 }
-                if (!empty($tagIds)) {
-                    $task->tags()->attach($tagIds);
-                }
-
                 if (array_key_exists('images', $validatedData) && array_key_exists($taskId, $validatedData['images'])) {
                     $imageFilePath = 'public/images/' . $task->image;
                     if (Storage::exists($imageFilePath)) {

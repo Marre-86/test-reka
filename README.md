@@ -4,4 +4,4 @@
 
 ## About
 
-This project is a test assignment.
+This project is a test assignment. The resulting web app is deployed [here](https://test-reka-production.up.railway.app/).
