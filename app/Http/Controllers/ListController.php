@@ -137,12 +137,17 @@ class ListController extends Controller
         $list = TodoList::findOrFail($list->id);
         $tagNamesArray = [];
 
+        $tasks = Task::where('list_id', $list->id)
+            ->orderBy('order_within_list')
+            ->get();
+
+
         foreach ($list->tasks as $task) {
             $tagNames = $task->tags->pluck('name')->implode(', ');
             $tagNamesArray[$task->order_within_list] = $tagNames;
         }
 
-        return view('list.edit', ['list' => $list, 'tags' => $tagNamesArray]);
+        return view('list.edit', ['list' => $list, 'tasks' => $tasks, 'tags' => $tagNamesArray]);
     }
 
     /**
@@ -150,7 +155,6 @@ class ListController extends Controller
      */
     public function update(Request $request, TodoList $list)
     {
-     //   dd($request->all());
         $images = $request->input('images');
         $rules = [
             'name' => 'required',
@@ -169,28 +173,27 @@ class ListController extends Controller
         }
 
         $validatedData = $validator->validated();
-     //   dd($validatedData);
         $list->name = $validatedData['name'];
         $list->save();
 
 
-
         if ($request->input('newTasks') !== null) {
-            foreach ($request->input('newTasks') as $newTaskGoesAfter => $newTaskName) {
+            $newTaskIndexes = [];
+            foreach ($request->input('newTasks') as $newTaskIndexWithinList => $newTaskName) {
                 $task = new Task();
                 $task->name = $newTaskName;
-                if ((array_key_exists('newImages', $validatedData)) && (array_key_exists($newTaskGoesAfter, $validatedData['newImages']))) {   // phpcs:ignore
-                    $image = $validatedData['newImages'][$newTaskGoesAfter];
-                    $fileName = now()->format('Y.m.d-H.i.s') . '(' . $newTaskGoesAfter . ').' . $image->extension();
+                if ((array_key_exists('newImages', $validatedData)) && (array_key_exists($newTaskIndexWithinList, $validatedData['newImages']))) {   // phpcs:ignore
+                    $image = $validatedData['newImages'][$newTaskIndexWithinList];
+                    $fileName = now()->format('Y.m.d-H.i.s') . '(' . $newTaskIndexWithinList . ').' . $image->extension();   // phpcs:ignore
                     $image->storeAs('public/images', $fileName);
                     $task->image = $fileName ?? null;
                     $fileName = null;
                 }
                 $task->list_id = $list->id;
-                $task->order_within_list = 999;
+                $task->order_within_list = $newTaskIndexWithinList;
                 $task->save();
-                if ((array_key_exists('newTags', $validatedData)) && (array_key_exists($newTaskGoesAfter, $validatedData['newTags']))) {   // phpcs:ignore
-                    $tagsString = $validatedData['newTags'][$newTaskGoesAfter];
+                if ((array_key_exists('newTags', $validatedData)) && (array_key_exists($newTaskIndexWithinList, $validatedData['newTags']))) {   // phpcs:ignore
+                    $tagsString = $validatedData['newTags'][$newTaskIndexWithinList];
                     $tagsArray = array_map('trim', explode(',', $tagsString));
                     $uniqueTags = array_unique($tagsArray);
                     foreach ($uniqueTags as $tagName) {
@@ -198,15 +201,23 @@ class ListController extends Controller
                         $task->tags()->attach($tag->id);
                     }
                 }
+                $newTaskIndexes[] = $newTaskIndexWithinList;
             }
         }
 
 
-
         if ($request->input('tasks') !== null) {
+            if (isset($newTaskIndexes) && !empty($newTaskIndexes)) {
+                $diff = array_diff(range(1, 50), $newTaskIndexes);
+                $updatedOldTaskIndexes = array_slice($diff, 0, count($request->input('tasks')));
+            }
             foreach ($request->input('tasks') as $taskId => $taskName) {
                 $task = Task::find($taskId);
                 $task->name = $taskName;
+
+                if (isset($updatedOldTaskIndexes)) {
+                    $task->order_within_list = array_shift($updatedOldTaskIndexes);
+                }
 
                 $tagsString = $validatedData['tags'][$taskId];
                 $tagsArray = array_filter(array_map('trim', explode(',', $tagsString)));

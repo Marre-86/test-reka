@@ -28,7 +28,34 @@
                 </div>
             </div>
         </div>
-        @foreach ($list->tasks as $task)
+
+        <div class="ins-task-btn">
+              <button type="button" class="btn btn-outline-dark">INSERT TASK</button>
+        </div>
+
+        <div class="new-task-container" style="display: none;">
+            <div class="card" style="margin-top:1rem; padding-left:1rem; min-width:28rem;">
+                <div class="form-group row" style="margin-bottom:10px">
+                    {{ Form::label('newTasks[1]', 'New Task', ['class' => 'col-sm-3 col-form-label', 'style' => 'font-weight: bold']) }}
+                    <div class="col-sm-9">
+                        {{ Form::text('newTasks[1]', null, ['class' => 'form-control-plaintext', 'style' => 'width:80%', 'required' => 'required', 'disabled' => 'disabled'])}}
+                    </div>
+                </div>
+                <div class="form-group row" style="margin-bottom:10px">
+                    {{ Form::label('newTags[1]', 'Tags', ['class' => 'col-sm-3 col-form-label']) }}
+                    <div class="col-sm-9">
+                        {{ Form::text('newTags[1]', null, ['class' => 'form-control-plaintext', 'style' => 'width:80%', 'disabled' => 'disabled'])}}
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:10px;">
+                    <p style="margin-bottom:0.2rem; float:left;">Image</p>
+                    {{ Form::file('newImages[1]', ['class' => 'form-control', 'style' => 'width:60%', 'accept' => 'image/*', 'disabled' => 'disabled'])}}
+                    <small id="imageHelp" class="form-text text-muted">Max size is 2048 kB.</small>
+                </div>
+            </div>
+        </div>
+
+        @foreach ($tasks as $task)
           <div class="card" style="margin-top:1rem; padding-left:1rem; min-width:28rem;">
             <div class="form-group row" style="margin-bottom:10px">
                 {{ Form::label('tasks[' . $task->id . ']', 'Task ' . $task->order_within_list, ['class' => 'col-sm-3 col-form-label', 'style' => 'font-weight: bold']) }}
@@ -61,23 +88,23 @@
               <button type="button" class="btn btn-outline-dark">INSERT TASK</button>
           </div>
 
-          <div class="new-card-container" style="display: none;">
+          <div class="new-task-container" style="display: none;">
             <div class="card" style="margin-top:1rem; padding-left:1rem; min-width:28rem;">
                 <div class="form-group row" style="margin-bottom:10px">
-                    {{ Form::label('newTasks[0]', 'New Task', ['class' => 'col-sm-3 col-form-label', 'style' => 'font-weight: bold']) }}
+                    {{ Form::label('newTasks[' . $task->order_within_list + 1 . ']', 'New Task', ['class' => 'col-sm-3 col-form-label', 'style' => 'font-weight: bold']) }}
                     <div class="col-sm-9">
-                        {{ Form::text('newTasks[0]', null, ['class' => 'form-control-plaintext', 'style' => 'width:80%', 'required' => 'required', 'disabled' => 'disabled'])}}
+                        {{ Form::text('newTasks[' . $task->order_within_list + 1 . ']', null, ['class' => 'form-control-plaintext', 'style' => 'width:80%', 'required' => 'required', 'disabled' => 'disabled'])}}
                     </div>
                 </div>
                 <div class="form-group row" style="margin-bottom:10px">
-                    {{ Form::label('newTags[0]', 'Tags', ['class' => 'col-sm-3 col-form-label']) }}
+                    {{ Form::label('newTags[' . $task->order_within_list + 1 . ']', 'Tags', ['class' => 'col-sm-3 col-form-label']) }}
                     <div class="col-sm-9">
-                        {{ Form::text('newTags[0]', null, ['class' => 'form-control-plaintext', 'style' => 'width:80%', 'disabled' => 'disabled'])}}
+                        {{ Form::text('newTags[' . $task->order_within_list + 1 . ']', null, ['class' => 'form-control-plaintext', 'style' => 'width:80%', 'disabled' => 'disabled'])}}
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom:10px;">
                     <p style="margin-bottom:0.2rem; float:left;">Image</p>
-                    {{ Form::file('newImages[0]', ['class' => 'form-control', 'style' => 'width:60%', 'accept' => 'image/*', 'disabled' => 'disabled'])}}
+                    {{ Form::file('newImages[' . $task->order_within_list + 1 . ']', ['class' => 'form-control', 'style' => 'width:60%', 'accept' => 'image/*', 'disabled' => 'disabled'])}}
                     <small id="imageHelp" class="form-text text-muted">Max size is 2048 kB.</small>
                 </div>
             </div>
@@ -95,35 +122,53 @@
 <script>
   $(document).ready(function() {
     $('.btn-outline-dark').on('click', function() {
-      var newContainer = $(this).closest('.ins-task-btn').next('.new-card-container');
+      var currentTaskForm = $(this).closest('.ins-task-btn').next('.new-task-container');
 
-      newContainer.show();
+      currentTaskForm.show();
       $(this).parent().hide();
 
-      var goesAfter_String = $(this).closest('.ins-task-btn').prev('.card').find('.col-form-label:first').text();
-      var goesAfter = goesAfter_String.replace('Task ', '');
+      var indexForNewTaskInsertion_String = $(this).closest('.ins-task-btn').prev('.card').find('.col-form-label:first').text();
+      var indexForNewTaskInsertion = indexForNewTaskInsertion_String.includes('Task') ? Number(indexForNewTaskInsertion_String.replace('Task ', '')) + 1 : 1;
 
-      // Update the label and input field with the new task index
-      newContainer.find('label').eq(0)
-        .attr('id', 'newTasks[' + goesAfter + ']')
-        .attr('for', 'newTasks[' + goesAfter + ']');
-      newContainer.find('input').eq(0)
-        .attr('name', 'newTasks[' + goesAfter + ']')
-        .attr('id', 'newTasks[' + goesAfter + ']')
+      // Activating disabled inputs
+      currentTaskForm.find('input').eq(0)
         .removeAttr('disabled');
-    
-      newContainer.find('label').eq(1)
-        .attr('id', 'newTags[' + goesAfter + ']')
-        .attr('for', 'newTags[' + goesAfter + ']');
-      newContainer.find('input').eq(1)
-        .attr('name', 'newTags[' + goesAfter + ']')
-        .attr('id', 'newTags[' + goesAfter + ']')
+      currentTaskForm.find('input').eq(1)
+        .removeAttr('disabled');
+      currentTaskForm.find('input').eq(2)
         .removeAttr('disabled');
 
-      newContainer.find('input').eq(2)
-        .attr('name', 'newImages[' + goesAfter + ']')
-        .attr('id', 'newImages[' + goesAfter + ']')
-        .removeAttr('disabled');
+      // Incrementing Labels of old tasks, that follow inserted new task
+      var followingIndexes = $(this).closest('.ins-task-btn').nextAll('.card').find('.col-form-label:first');
+      followingIndexes.each(function(index, element) {
+            var currentValue = $(element).text();
+            var incrementedValue = 'Task ' + (parseInt(currentValue.replace('Task ', '')) + 1);
+            $(element).text(incrementedValue);
+      });
+
+      // Incrementing Labels and Inputs of new tasks, following the current new task
+      var followingTaskForms = currentTaskForm.nextAll('.new-task-container');
+      followingTaskForms.each(function() {
+            var labels = $(this).find('label[for^="new"]');
+            labels.each(function() {
+                var attributeFor = $(this).attr('for');
+                var incrementedAttributeFor = attributeFor.replace(/\[\d+\]/, function(match) {
+                    var currentNumber = parseInt(match.match(/\d+/)[0]);
+                    return '[' + (currentNumber + 1) + ']';
+                });
+                $(this).attr('for', incrementedAttributeFor);
+            });
+            var inputs = $(this).find('input[name^="new"]');
+            inputs.each(function() {
+                var attributeName = $(this).attr('name');
+                var incrementedAttributeName = attributeName.replace(/\[\d+\]/, function(match) {
+                    var currentNumber = parseInt(match.match(/\d+/)[0]);
+                    return '[' + (currentNumber + 1) + ']';
+                });
+                $(this).attr('name', incrementedAttributeName);
+                $(this).attr('id', incrementedAttributeName);
+            });
+      });
 
     });
   });
