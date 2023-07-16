@@ -2,7 +2,7 @@
 @section('content')
 <div class="ali-cen-out">
     <div class="ali-cen-in">
-        <div class="card" style="margin-bottom:1rem; min-width:28rem;">
+        <div class="card" style="margin-bottom:1rem; width:28rem; min-width:360px;">
             <div class="card-header">
                 <h3>Edit List</h3>
             </div>
@@ -34,11 +34,14 @@
         </div>
 
         <div class="new-task-container" style="display: none;">
-            <div class="card" style="margin-top:1rem; padding-left:1rem; min-width:28rem;">
+            <div class="card" style="margin-top:1rem; padding-left:1rem; width:28rem; min-width:360px;">
                 <div class="form-group row" style="margin-bottom:10px">
                     {{ Form::label('newTasks[1]', 'New Task', ['class' => 'col-sm-3 col-form-label', 'style' => 'font-weight: bold']) }}
-                    <div class="col-sm-9">
+                    <div class="col-sm-9 d-flex justify-content-end">
                         {{ Form::text('newTasks[1]', null, ['class' => 'form-control-plaintext', 'style' => 'width:80%', 'required' => 'required', 'disabled' => 'disabled'])}}
+                        <div class="del-task-btn">
+                            <button type="button" class="btn btn-danger btn-sm">X</button>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group row" style="margin-bottom:10px">
@@ -56,11 +59,14 @@
         </div>
 
         @foreach ($tasks as $task)
-          <div class="card" style="margin-top:1rem; padding-left:1rem; min-width:28rem;">
+          <div class="card" style="margin-top:1rem; padding-left:1rem; width:28rem; min-width:360px;">
             <div class="form-group row" style="margin-bottom:10px">
                 {{ Form::label('tasks[' . $task->id . ']', 'Task ' . $task->order_within_list, ['class' => 'col-sm-3 col-form-label', 'style' => 'font-weight: bold']) }}
-                <div class="col-sm-9">
+                <div class="col-sm-9 d-flex justify-content-end">
                     {{ Form::text('tasks[' . $task->id . ']', $task->name, ['class' => 'form-control-plaintext', 'style' => 'width:80%', 'required' => 'required'])}}
+                    <div class="del-task-btn">
+                        <button type="button" class="btn btn-danger btn-sm">X</button>
+                    </div>
                 </div>
             </div>
 
@@ -89,11 +95,14 @@
           </div>
 
           <div class="new-task-container" style="display: none;">
-            <div class="card" style="margin-top:1rem; padding-left:1rem; min-width:28rem;">
+            <div class="card" style="margin-top:1rem; padding-left:1rem; width:28rem; min-width:360px;">
                 <div class="form-group row" style="margin-bottom:10px">
                     {{ Form::label('newTasks[' . $task->order_within_list + 1 . ']', 'New Task', ['class' => 'col-sm-3 col-form-label', 'style' => 'font-weight: bold']) }}
-                    <div class="col-sm-9">
+                    <div class="col-sm-9 d-flex justify-content-end">
                         {{ Form::text('newTasks[' . $task->order_within_list + 1 . ']', null, ['class' => 'form-control-plaintext', 'style' => 'width:80%', 'required' => 'required', 'disabled' => 'disabled'])}}
+                        <div class="del-task-btn">
+                            <button type="button" class="btn btn-danger btn-sm">X</button>
+                        </div>
                     </div>
                 </div>
                 <div class="form-group row" style="margin-bottom:10px">
@@ -126,9 +135,6 @@
 
       currentTaskForm.show();
       $(this).parent().hide();
-
-      var indexForNewTaskInsertion_String = $(this).closest('.ins-task-btn').prev('.card').find('.col-form-label:first').text();
-      var indexForNewTaskInsertion = indexForNewTaskInsertion_String.includes('Task') ? Number(indexForNewTaskInsertion_String.replace('Task ', '')) + 1 : 1;
 
       // Activating disabled inputs
       currentTaskForm.find('input').eq(0)
@@ -169,6 +175,76 @@
                 $(this).attr('id', incrementedAttributeName);
             });
       });
+
+    });
+
+    
+    $('.btn-danger').on('click', function() {
+      // Checking whether button within old task form or new task form was triggered
+      if ($(this).closest('.new-task-container').length > 0) {
+        var currentTaskForm = $(this).closest('.new-task-container');
+
+        currentTaskForm.prev('.ins-task-btn').show();
+
+        // Deactivating inputs of task which we delete
+        currentTaskForm.find('input').eq(0)
+            .val('').attr('disabled', 'disabled');
+        currentTaskForm.find('input').eq(1)
+            .val('').attr('disabled', 'disabled');
+        currentTaskForm.find('input').eq(2)
+            .val('').attr('disabled', 'disabled');
+      } else {
+        var currentTaskForm = $(this).closest('.card');
+
+        currentTaskForm.next('.ins-task-btn').hide();
+
+        // Deactivating inputs of task which we delete
+        currentTaskForm.find('input').eq(0)
+            .val('-+DELETED+-');
+        currentTaskForm.find('input').eq(1)
+            .val('').attr('disabled', 'disabled');
+        currentTaskForm.find('input').eq(2)
+            .val('').attr('disabled', 'disabled');
+      }
+
+      currentTaskForm.hide();
+
+      // Decrementing Labels of old tasks, that follow inserted new task
+      if ($(this).closest('.new-task-container').length > 0) {
+        var followingIndexes = $(this).closest('.new-task-container').nextAll('.card').find('.col-form-label:first');
+      } else {
+        var followingIndexes = $(this).closest('.card').nextAll('.card').find('.col-form-label:first');
+      }
+      followingIndexes.each(function(index, element) {
+            var currentValue = $(element).text();
+            var incrementedValue = 'Task ' + (parseInt(currentValue.replace('Task ', '')) - 1);
+            $(element).text(incrementedValue);
+      });
+
+      // Decrementing Labels and Inputs of new tasks, following the current new task
+      var followingTaskForms = currentTaskForm.nextAll('.new-task-container');
+      followingTaskForms.each(function() {
+            var labels = $(this).find('label[for^="new"]');
+            labels.each(function() {
+                var attributeFor = $(this).attr('for');
+                var incrementedAttributeFor = attributeFor.replace(/\[\d+\]/, function(match) {
+                    var currentNumber = parseInt(match.match(/\d+/)[0]);
+                    return '[' + (currentNumber - 1) + ']';
+                });
+                $(this).attr('for', incrementedAttributeFor);
+            });
+            var inputs = $(this).find('input[name^="new"]');
+            inputs.each(function() {
+                var attributeName = $(this).attr('name');
+                var incrementedAttributeName = attributeName.replace(/\[\d+\]/, function(match) {
+                    var currentNumber = parseInt(match.match(/\d+/)[0]);
+                    return '[' + (currentNumber - 1) + ']';
+                });
+                $(this).attr('name', incrementedAttributeName);
+                $(this).attr('id', incrementedAttributeName);
+            });
+      });
+
 
     });
   });

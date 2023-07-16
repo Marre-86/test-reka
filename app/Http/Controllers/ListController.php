@@ -155,6 +155,7 @@ class ListController extends Controller
      */
     public function update(Request $request, TodoList $list)
     {
+       // dd($request->all());
         $images = $request->input('images');
         $rules = [
             'name' => 'required',
@@ -208,16 +209,24 @@ class ListController extends Controller
 
         if ($request->input('tasks') !== null) {
             if (isset($newTaskIndexes) && !empty($newTaskIndexes)) {
-                $diff = array_diff(range(1, 50), $newTaskIndexes);
+                $diff = array_diff(range(1, 99), $newTaskIndexes);
                 $updatedOldTaskIndexes = array_slice($diff, 0, count($request->input('tasks')));
+            } else {
+                $updatedOldTaskIndexes = array_slice(range(1, 99), 0, count($request->input('tasks')));
             }
+
             foreach ($request->input('tasks') as $taskId => $taskName) {
                 $task = Task::find($taskId);
+
+                if ($taskName === '-+DELETED+-') {
+                    $this->deleteTask($task);
+                    continue;
+                }
+
                 $task->name = $taskName;
 
-                if (isset($updatedOldTaskIndexes)) {
-                    $task->order_within_list = array_shift($updatedOldTaskIndexes);
-                }
+                $task->order_within_list = array_shift($updatedOldTaskIndexes);
+
 
                 $tagsString = $validatedData['tags'][$taskId];
                 $tagsArray = array_filter(array_map('trim', explode(',', $tagsString)));
@@ -263,27 +272,32 @@ class ListController extends Controller
         }
         $list = TodoList::findOrFail($list->id);
         $list->tasks()->each(function ($task) {
-            if ($task->image !== null) {
-                $taskFilePath = 'public/images/' . $task->image;
-                if (Storage::exists($taskFilePath)) {
-                    Storage::delete($taskFilePath);
-                }
-            }
-            // Deleting tags which are not attached to any other task
-            $detachedTags = $task->tags;
-            $task->tags()->detach();
-            foreach ($detachedTags as $detachedTag) {
-                if ($detachedTag->tasks()->count() === 0) {
-                    $detachedTag->delete();
-                }
-            }
-
-            $task->delete();
+            $this->deleteTask($task);
         });
 
         $list->delete();
 
         flash('List has been successfully deleted!')->success();
         return redirect()->route('list.createAndIndex');
+    }
+
+    private function deleteTask(Task $task)
+    {
+        if ($task->image !== null) {
+            $taskFilePath = 'public/images/' . $task->image;
+            if (Storage::exists($taskFilePath)) {
+                Storage::delete($taskFilePath);
+            }
+        }
+        // Deleting tags which are not attached to any other task
+        $detachedTags = $task->tags;
+        $task->tags()->detach();
+        foreach ($detachedTags as $detachedTag) {
+            if ($detachedTag->tasks()->count() === 0) {
+                $detachedTag->delete();
+            }
+        }
+
+        $task->delete();
     }
 }
