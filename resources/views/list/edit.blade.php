@@ -2,7 +2,7 @@
 @section('content')
 <div class="ali-cen-out">
     <div class="ali-cen-in">
-        <div class="card" style="margin-bottom:1rem; width:28rem; min-width:360px;">
+        <div class="card art-card" style="padding-left:0;">
             <div class="card-header">
                 <h3>Edit List</h3>
             </div>
@@ -33,8 +33,8 @@
               <button type="button" class="btn btn-outline-dark">INSERT TASK</button>
         </div>
 
-        <div class="new-task-container" style="display: none;">
-            <div class="card" style="margin-top:1rem; padding-left:1rem; width:28rem; min-width:360px;">
+        <div class="new-task-container" style="display:none;">
+            <div class="card art-card">
                 <div class="form-group row" style="margin-bottom:10px">
                     {{ Form::label('newTasks[1]', 'New Task', ['class' => 'col-sm-3 col-form-label', 'style' => 'font-weight: bold']) }}
                     <div class="col-sm-9 d-flex justify-content-end">
@@ -59,7 +59,7 @@
         </div>
 
         @foreach ($tasks as $task)
-          <div class="card" style="margin-top:1rem; padding-left:1rem; width:28rem; min-width:360px;">
+          <div class="card art-card">
             <div class="form-group row" style="margin-bottom:10px">
                 {{ Form::label('tasks[' . $task->id . ']', 'Task ' . $task->order_within_list, ['class' => 'col-sm-3 col-form-label', 'style' => 'font-weight: bold']) }}
                 <div class="col-sm-9 d-flex justify-content-end">
@@ -95,7 +95,7 @@
           </div>
 
           <div class="new-task-container" style="display: none;">
-            <div class="card" style="margin-top:1rem; padding-left:1rem; width:28rem; min-width:360px;">
+            <div class="card art-card">
                 <div class="form-group row" style="margin-bottom:10px">
                     {{ Form::label('newTasks[' . $task->order_within_list + 1 . ']', 'New Task', ['class' => 'col-sm-3 col-form-label', 'style' => 'font-weight: bold']) }}
                     <div class="col-sm-9 d-flex justify-content-end">
@@ -118,13 +118,15 @@
                 </div>
             </div>
           </div>
-        @endforeach        
-        <div class="list-sbm" style="margin-bottom:1rem">
+        @endforeach     
+
+        <div class="list-sbm fixed-update-btn">
             {{ Form::submit('Update List', ['class' => 'btn btn-primary']) }}
         </div>
         {{ Form::close() }}
-        
-    </div>
+
+    </div>    
+
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -178,7 +180,7 @@
 
     });
 
-    
+
     $('.btn-danger').on('click', function() {
       // Checking whether button within old task form or new task form was triggered
       if ($(this).closest('.new-task-container').length > 0) {

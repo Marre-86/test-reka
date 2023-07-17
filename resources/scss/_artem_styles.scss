@@ -102,6 +102,7 @@
 .ali-cen-in {
   display: inline-block;
   text-align: left;
+  margin-bottom:1rem; 
 }
 
 select {
@@ -122,4 +123,36 @@ select:invalid option:not(:disabled) { color: black }
 .del-task-btn {
   height:30px;
   margin:0 20px 0 20px;
+}
+
+.fixed-update-btn {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 28.5rem; /* Adjust the value based on the width of the button */
+  /* Add any other necessary styling for the button */
+}
+
+@media (max-width: 720px) {
+  .fixed-update-btn {
+    margin-left: 20rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .fixed-update-btn {
+    margin-left: 14rem;
+  }
+}
+
+.art-card {
+  margin-top:1rem;
+  padding-left:1rem;
+  width:28rem;
+}
+
+@media (max-width: 480px) {
+  .art-card {
+    width:360px;
+  }
 }
