@@ -1,4 +1,4 @@
-                <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <nav class="navbar navbar-expand-lg navbar-light bg-light nav-height">
                     <div class="container-xxl">
                         <a href="/">
                             <img href="/" src="/pics/logo.png" alt="logo" style="width:6rem;">
@@ -37,10 +37,10 @@
                                 </a>   
                                 </div>                     
                             @else                                        
-                                <a href="{{ route('login') }}" class="btn btn-primary">
+                                <a href="{{ route('login') }}" class="btn btn-primary art-login">
                                     Log In
                                 </a>
-                                <a href="{{ route('register') }}" class="btn btn-primary">
+                                <a href="{{ route('register') }}" class="btn btn-primary art-login">
                                     Sign Up
                                 </a>                                       
                             @endauth

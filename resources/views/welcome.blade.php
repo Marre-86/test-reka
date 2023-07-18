@@ -1,9 +1,9 @@
 @extends('layouts.main')
 @section('content')
 
-<div class="w-60">
+<div class="welcome">
 
-    <p class="intro">This app has been completed by <a href="https://www.linkedin.com/in/artem-pokhiliuk/">Artem Pokhiliuk</a> as a test assignment. It has been made in Laravel framework with using jQuery. The source code <a href="https://github.com/Marre-86/test-reka">is here</a> .</p>
+    <p class="intro">This app has been completed by <a href="https://www.linkedin.com/in/artem-pokhiliuk/">Artem Pokhiliuk</a> as a test assignment. It has been made using the Laravel framework and jQuery. The source code <a href="https://github.com/Marre-86/test-reka">is available here</a>.</p>
     <p class="intro">There are three users added to the app by default:</p>
     <table class="table table-hover" style="max-width:26rem; margin:auto">
         <thead>

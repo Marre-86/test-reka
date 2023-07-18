@@ -1,3 +1,18 @@
+.welcome {
+  width:80%;
+  margin-bottom:2rem;
+  column-count: 2;
+}
+@media (max-width: 1200px) {
+  .welcome {
+    width:100%;
+  }
+}
+@media (max-width: 640px) {
+  .welcome {
+    column-count: 1;
+  }
+}
 .w-30 {
   width:38%;
   margin-bottom:2rem;
@@ -40,6 +55,11 @@
 }
 .me-auto {
   margin-left:10rem;
+}
+@media (max-width: 660px) {
+  .me-auto {
+    margin-left: 2rem;
+  }
 }
 
 .list-sbm {
@@ -154,5 +174,15 @@ select:invalid option:not(:disabled) { color: black }
 @media (max-width: 480px) {
   .art-card {
     width:360px;
+  }
+}
+
+.nav-height {
+  height:auto;
+}
+
+@media (max-width: 380px) {
+  .art-login {
+    margin-top: 1rem;
   }
 }
